@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgis:
+    image: postgis/postgis:15-3.3
+    container_name: postgis_lab
+    environment:
+      POSTGRES_DB: geodatabase
+      POSTGRES_USER: geouser
+      POSTGRES_PASSWORD: geopass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgis/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: jupyter_lab
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/home/jovyan
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/data
+    depends_on:
+      - postgis
+
+  streamlit:
+    image: python:3.11
+    container_name: streamlit_lab
+    working_dir: /app
+    command: bash -c "pip install streamlit geopandas psycopg2-binary sqlalchemy && streamlit run main.py"
+    volumes:
+      - ./app:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - postgis
+
+volumes:
+  postgres_data:
