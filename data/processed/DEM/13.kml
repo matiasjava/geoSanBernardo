@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<kml>
+  <GroundOverlay>
+    <description>STGO Talca - egm2008-1 Stgo-Talca</description>
+    <name>13.jp2</name>
+    <name>13</name>
+    <LookAt>
+      <longitude>-70.729903207444437</longitude>
+      <latitude>-33.59955426327393</latitude>
+      <tilt>0</tilt>
+      <range>1274973.7528084449</range>
+      <heading>0.021540064941194838</heading>
+    </LookAt>
+    <Icon>13.jp2</Icon>
+    <LatLonBox>
+      <north>-32.90694294044139</north>
+      <south>-34.292165586106478</south>
+      <east>-69.777451147334133</east>
+      <west>-71.682355267554726</west>
+      <rotation>0.021540064941194838</rotation>
+    </LatLonBox>
+  </GroundOverlay>
+</kml>
