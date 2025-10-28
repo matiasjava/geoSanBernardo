@@ -4,10 +4,12 @@ services:
   postgis:
     image: postgis/postgis:15-3.3
     container_name: postgis_lab
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: geodatabase
-      POSTGRES_USER: geouser
-      POSTGRES_PASSWORD: geopass
+      POSTGRES_DB: ${POSTGRES_DB:-geodatabase}
+      POSTGRES_USER: ${POSTGRES_USER:-geouser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geopass}
     ports:
       - "5432:5432"
     volumes:
@@ -17,8 +19,11 @@ services:
   jupyter:
     image: jupyter/scipy-notebook:latest
     container_name: jupyter_lab
+    env_file:
+      - .env
     environment:
-      - JUPYTER_ENABLE_LAB=yes
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN}
     ports:
       - "8888:8888"
     volumes:
@@ -28,17 +33,33 @@ services:
     depends_on:
       - postgis
 
-  streamlit:
+  webapp:
     image: python:3.11
-    container_name: streamlit_lab
+    container_name: web_app
     working_dir: /app
-    command: bash -c "pip install streamlit geopandas psycopg2-binary sqlalchemy && streamlit run main.py"
+    command: bash -c "pip install streamlit geopandas psycopg2-binary sqlalchemy && streamlit run main.py --server.port=8501 --server.address=0.0.0.0"
     volumes:
       - ./app:/app
     ports:
-      - "8501:8501"
+      - "5000:8501" # expose Streamlit app at http://localhost:5000
+    depends_on:
+      - postgis
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgis
 
 volumes:
   postgres_data:
+  pgadmin_data:
