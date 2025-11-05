@@ -10,11 +10,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-geodatabase}
       POSTGRES_USER: ${POSTGRES_USER:-geouser}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geopass}
+      # Configuración para permitir conexiones
+      POSTGRES_HOST_AUTH_METHOD: md5  # Usa md5 para autenticación segura
     ports:
-      - "5432:5432"
+      - "55432:5432"  # Exponer para conexión externa (QGIS local)
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgis/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: >
+      bash -c "echo \"listen_addresses='*'\" >> /var/lib/postgresql/data/postgresql.conf &&
+               echo \"host all all 0.0.0.0/0 md5\" >> /var/lib/postgresql/data/pg_hba.conf &&
+               docker-entrypoint.sh postgres"
 
   jupyter:
     image: jupyter/scipy-notebook:latest
@@ -41,7 +47,7 @@ services:
     volumes:
       - ./app:/app
     ports:
-      - "5000:8501" # expose Streamlit app at http://localhost:5000
+      - "5000:8501"
     depends_on:
       - postgis
 
