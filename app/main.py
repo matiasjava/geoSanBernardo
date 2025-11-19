@@ -17,7 +17,7 @@ st.title("Dashboard San Bernardo - Demo")
 
 # Ejemplo simple: leer GeoPackage local
 st.sidebar.header("Controles")
-db_url = st.sidebar.text_input("Postgres URL", value="postgresql://postgres:123456@localhost:5432/snbk")
+db_url = st.sidebar.text_input("Postgres URL", value="postgresql://postgres:1234@localhost:5432/snbk")
 show_limite = st.sidebar.checkbox("Mostrar límite de San Bernardo", value=False)
 
 
